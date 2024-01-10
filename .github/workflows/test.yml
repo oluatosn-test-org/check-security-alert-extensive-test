@@ -27,7 +27,7 @@ jobs:
         }
         alerts=$(curl -H "Accept: application/vnd.github+json" \
                     -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
-                    https://api.github.com/repos/${{ github.repository }}/dependabot/alerts)
+                    https://api.github.com/orgs/${{ github.owner }}/dependabot/alerts)
         for element in "${alerts[@]}"; do
           if contains_alnum "$element"; then
               valid_alerts+=("$element") # Add to the valid array if condition is met
