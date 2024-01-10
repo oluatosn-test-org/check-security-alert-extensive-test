@@ -1,4 +1,4 @@
-name: Check for Security Alerts - local scope
+name: Check for Security Alerts - another
 
 on:
   push:
