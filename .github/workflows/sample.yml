@@ -1,0 +1,47 @@
+name: Check for Security Alerts
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+
+jobs:
+  check-security-alerts:
+    name: Check for Security Alerts
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check for Security Alerts
+      env:
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.MY_TOKEN }}
+      run: |
+        echo "${{ github.repository }}"
+        valid_alerts=()
+        contains_alnum() {
+          [[ $1 =~ [[:alnum:]] ]] && return 0 || return 1
+        }
+        alerts=$(curl -H "Accept: application/vnd.github+json" \
+                    -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
+                    https://api.github.com/orgs/${{ github.repository }}/dependabot/alerts)
+        for element in "${alerts[@]}"; do
+          if contains_alnum "$element"; then
+              valid_alerts+=("$element") # Add to the valid array if condition is met
+          fi
+        done
+        if [[ -z "$valid_alerts" || "$valid_alerts" == "[]" ]]; then
+          echo "No Dependabot alerts"
+        else
+          echo "Dependabot alerts found"
+          echo "$valid_alerts" >> output.txt
+        fi
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: workflow-output
+        path: output.txt
+        retention-days: 5
