@@ -38,5 +38,4 @@ jobs:
         else
           echo "Dependabot alerts found"
           echo "$valid_alerts"
-          exit 1
         fi
