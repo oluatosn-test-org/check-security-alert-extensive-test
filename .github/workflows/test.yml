@@ -37,5 +37,12 @@ jobs:
           echo "No Dependabot alerts"
         else
           echo "Dependabot alerts found"
-          echo "$valid_alerts"
+          echo "$valid_alerts" >> output.txt
         fi
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: workflow-output
+        path: output.txt
+        retention-days: 5
+
