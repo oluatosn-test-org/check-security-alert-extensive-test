@@ -1,4 +1,4 @@
-name: Check for Security Alerts - another
+name: Check for Security Alerts - local
 
 on:
   push:
@@ -29,10 +29,10 @@ jobs:
 
         if [[ "$num_alerts" -eq 0 ]]; then
           echo "No Dependabot alerts" 
-          exit 1
         else
           echo "Dependabot alerts found" > output.txt
           echo "$alerts" >> output.txt
+          exit 1
         fi
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v3
