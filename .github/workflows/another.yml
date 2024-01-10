@@ -1,0 +1,41 @@
+name: Check for Security Alerts - another
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+
+jobs:
+  check-security-alerts:
+    name: Check for Security Alerts
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Check for Security Alerts
+      env:
+        PERSONAL_ACCESS_TOKEN: ${{ secrets.MY_TOKEN }}
+      run: |
+        echo "${{ github.repository }}"
+        alerts=$(curl -H "Accept: application/vnd.github+json" \
+                      -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
+                      https://api.github.com/repos/${{ github.repository }}/dependabot/alerts)
+
+        num_alerts=$(echo "$alerts" | jq '. | length')
+
+        if [[ "$num_alerts" -eq 0 ]]; then
+          echo "No Dependabot alerts" > output.txt
+        else
+          echo "Dependabot alerts found" > output.txt
+          echo "$alerts" >> output.txt
+        fi
+    - name: 'Upload Artifact'
+      uses: actions/upload-artifact@v3
+      with:
+        name: workflow-output
+        path: output.txt
+        retention-days: 5
