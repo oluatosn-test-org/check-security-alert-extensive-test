@@ -21,7 +21,7 @@ jobs:
         PERSONAL_ACCESS_TOKEN: ${{ secrets.MY_TOKEN }}
       run: |
         echo "${{ github.repository }}"
-        alerts=$(curl -f -H "Accept: application/vnd.github+json" \
+        alerts=$(curl -v -f -H "Accept: application/vnd.github+json" \
                       -H "Authorization: token $PERSONAL_ACCESS_TOKEN" \
                       https://api.github.com/repos/${{ github.repository }}/dependabot/alerts)
         status=$?
